@@ -22,8 +22,11 @@ const articleSchema= new Schema({
     additionalResources:{
         type: Array
     },
-    iconInfo:{
-        type:{}
+    iconName:{
+        type:String
+    }, 
+    iconType:{
+        type:String
     }
 }, 
 {

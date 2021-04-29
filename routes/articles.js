@@ -1,13 +1,13 @@
 const express = require("express")
 const Article = require("../models/article")
+const cors= require('./cors')
 
 const articleRouter = express.Router()
 
-articleRouter.route("/")
-
 //* ENDPOINTS
-
-.get((req,res, next)=>{
+articleRouter.route("/")
+.options(cors.corsWithOptions, (req,res)=>res.sendStatus(200))
+.get(cors.cors, (req,res, next)=>{
    
     Article.find()
     .then(articles=>{
@@ -20,7 +20,7 @@ articleRouter.route("/")
     .catch(err => next(err))
 })
 
-.post((req,res, next)=>
+.post(cors.corsWithOptions,(req,res, next)=>
 {
     //mongoose will already check this to make sure it matches the schema we defined
     Article.create(req.body)
@@ -34,12 +34,12 @@ articleRouter.route("/")
 })
 
 //we can leave this as is because put is not an allowed operation on /articles
-.put((req,res)=>{
+.put(cors.corsWithOptions,(req,res)=>{
     res.statusCode = 403; 
     res.end("PUT operation not supported on /articles")
 })
 
-.delete((req,res, next)=>{
+.delete(cors.corsWithOptions,(req,res, next)=>{
     Article.deleteMany()
     .then(response => {
         res.statusCode= 200
@@ -50,8 +50,8 @@ articleRouter.route("/")
 })
 
 articleRouter.route(`/:articleId`)
-
-.get((req,res, next)=>{
+.options(cors.corsWithOptions, (req,res)=>res.sendStatus(200))
+.get(cors.cors,(req,res, next)=>{
     Article.findById(req.params.articleId)
     .then(article=>{
         console.log("article Created", article);
@@ -62,13 +62,13 @@ articleRouter.route(`/:articleId`)
     .catch(err => next(err))
 })
 
-.post((req,res)=>
+.post(cors.corsWithOptions,(req,res)=>
 {
     res.statusCode=403
     res.end(`POST operation not supported on /articles/${req.params.articleId}`)
 })
 
-.put((req,res, next)=>{
+.put(cors.corsWithOptions,(req,res, next)=>{
     Article.findByIdAndUpdate(req.params.articleId, {$set: req.body}, {new: true})
     .then(article =>{
         res.statusCode = 200
@@ -78,7 +78,7 @@ articleRouter.route(`/:articleId`)
     .catch(err => next(err))
 })
 
-.delete((req,res, next)=>{
+.delete(cors.corsWithOptions,(req,res, next)=>{
     Article.findByIdAndDelete(req.params.articleId)
     .then(response =>{
         res.statusCode = 200
